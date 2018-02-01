@@ -12,11 +12,11 @@ CodeBaseAddress:equ $8000
 
 		org		BaseAddress 							; where we start
 		opt 	zxnext 									; on our ZXNext
-
 		include "dictionary.asm"						; dictionary and other vectors
 
 		org 	CodeBaseAddress 						; words have to go $8000-$FFFF
 		include "io.asm" 								; I/O Routines
+		include "words.asm"								; Words
 
 ; **********************************************************************************************************
 ;										Initialisation/Support code

@@ -46,7 +46,20 @@ for k in labelsToFunctions:
 #
 #	Generate code to generate dictionary information.
 #
+wordData = []
+for d in open("word.info").read(32768).split(";"):
+	wordData.append(d.split(":"))
+#
 h.write("\tdef createDictionaryItems(self,dict):\n")
-
+#
+for n in range(0,len(wordData)):
+	wordInfo = wordData[n]
+	word = wordInfo[0]
+	wStart = labelsToAddress["WORDID_{0:4}_ENTRY".format(wordInfo[1])]
+	wExit = labelsToAddress["WORDID_{0:4}_EXIT".format(wordInfo[1])]
+	
+	h.write('\t\tdict.addCallWord("{0}",0x{1:04x})\n'.format(word,wStart))
+	if wordInfo[2] == 'Y':
+		h.write('\t\tdict.addMacroWord("{0}",0x{1:04x},0x{2:04x})\n'.format(word,wStart,wExit))
 
 h.close()

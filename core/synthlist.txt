@@ -1,0 +1,6 @@
+max
+min 
+within (?)
+times (?)
+/ mod
+

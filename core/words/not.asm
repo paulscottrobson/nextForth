@@ -2,15 +2,17 @@
 ;	Word:				NOT
 ;	Dictionary:			(a - a)
 ;	Date:				1st February 2018
-;	Macro: 				Yes
+;	Macro: 				No
 ;	Notes:
 ;
 
-		ld 		a,d
-		cpl
-		ld 		d,a
-		ld 		a,e
-		cpl 
-		ld 		e,a
+		pop 	hl
 
-		ret
+		ld 		a,d
+		or 		e
+		ld 		de,$0000
+		jr 		nz,__Not
+		dec 	de
+__Not:
+		jp	 	(hl)
+		

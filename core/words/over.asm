@@ -10,7 +10,7 @@
 		pop 	hl 					; 2nd on stack
 		push 	hl 					; push back
 		push 	de 					; push TOS
-		ex 		de,hl 
+		ex 		de,hl 				; 2nd to TOS 
 
 		jp 		(ix)
 		

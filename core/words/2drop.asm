@@ -8,10 +8,8 @@
 
 		pop 	hl
 
-		pop 	bc
-		push 	bc
-		push 	bc
-		push 	de
+		pop 	de
+		pop 	de
 
 		jp	 	(hl)
 

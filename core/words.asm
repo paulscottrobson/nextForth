@@ -117,10 +117,8 @@ WordID_1013_Exit:
 
 WordID_1004_Entry: ; *** 2drop ***
   pop  hl
-  pop  bc
-  push  bc
-  push  bc
-  push  de
+  pop  de
+  pop  de
   jp   (hl)
 WordID_1004_Exit:
 

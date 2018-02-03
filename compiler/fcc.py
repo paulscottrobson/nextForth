@@ -183,10 +183,10 @@ if __name__ == '__main__':
 	cc.complete()	
 
 # TODO:
-# 	testing
 #	structores/conditionals.
 # 	rendering directories
 # 	i/o words
 #	add min max / mod times within (?)
+# 	console i/o and new testing routine.
 # 	macro expansion / speed control
-
+# 	self

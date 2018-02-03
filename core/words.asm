@@ -1,4 +1,4 @@
-WordID_1037_Entry: ; *** ! ***
+WordID_1038_Entry: ; *** ! ***
   pop  ix
   pop  hl
   ex   de,hl
@@ -7,9 +7,9 @@ WordID_1037_Entry: ; *** ! ***
   ld   (hl),d
   pop  de
   jp   (ix)
-WordID_1037_Exit:
+WordID_1038_Exit:
 
-WordID_1023_Entry: ; *** * ***
+WordID_1024_Entry: ; *** * ***
   pop  ix
   pop  bc      ; BC,DE mult values
   ld   hl,0     ; Result
@@ -26,7 +26,7 @@ __Mult1:srl  b      ; shift BC right
   jr   nz,__Mult0
   ex   de,hl     ; result to TOS
   jp   (ix)
-WordID_1023_Exit:
+WordID_1024_Exit:
 
 WordID_1009_Entry: ; *** + ***
   pop  ix
@@ -50,14 +50,14 @@ WordID_1010_Entry: ; *** +! ***
   jp   (ix)
 WordID_1010_Exit:
 
-WordID_1033_Entry: ; *** - ***
+WordID_1034_Entry: ; *** - ***
   pop  ix
   pop  hl
   xor  a
   sbc  hl,de
   ex   de,hl
   jp   (ix)
-WordID_1033_Exit:
+WordID_1034_Exit:
 
 WordID_1001_Entry: ; *** 0< ***
   pop  hl
@@ -90,12 +90,12 @@ WordID_1002_Entry: ; *** 1- ***
   ret
 WordID_1002_Exit:
 
-WordID_1035_Entry: ; *** 2* ***
+WordID_1036_Entry: ; *** 2* ***
   ex   de,hl
   add  hl,hl
   ex   de,hl
   ret
-WordID_1035_Exit:
+WordID_1036_Exit:
 
 WordID_1007_Entry: ; *** 2+ ***
   inc  de
@@ -133,7 +133,7 @@ WordID_1005_Entry: ; *** 2dup ***
   jp   (ix)
 WordID_1005_Exit:
 
-WordID_1021_Entry: ; *** < ***
+WordID_1022_Entry: ; *** < ***
   pop  ix
   pop  hl
   xor  a
@@ -144,7 +144,7 @@ WordID_1021_Entry: ; *** < ***
   dec  de
 __Less:
   jp   (ix)
-WordID_1021_Exit:
+WordID_1022_Exit:
 
 WordID_1017_Entry: ; *** = ***
   pop  ix
@@ -160,7 +160,7 @@ __Equals:
   jp   (ix)
 WordID_1017_Exit:
 
-WordID_1019_Entry: ; *** > ***
+WordID_1020_Entry: ; *** > ***
   pop  ix
   pop  hl
   xor  a
@@ -172,9 +172,9 @@ WordID_1019_Entry: ; *** > ***
   dec  de
 __Greater:
   jp   (ix)
-WordID_1019_Exit:
+WordID_1020_Exit:
 
-WordID_1029_Entry: ; *** ?dup ***
+WordID_1030_Entry: ; *** ?dup ***
   pop  ix
   ld   a,d
   or   e
@@ -182,15 +182,20 @@ WordID_1029_Entry: ; *** ?dup ***
   push  de
 __QDup:
   jp   (ix)
-WordID_1029_Exit:
+WordID_1030_Exit:
 
-WordID_1030_Entry: ; *** @ ***
+WordID_1031_Entry: ; *** @ ***
   ex   de,hl
   ld   e,(hl)
   inc  hl
   ld   d,(hl)
   ret
-WordID_1030_Exit:
+WordID_1031_Exit:
+
+WordID_1018_Entry: ; *** [expand.macro] ***
+__ExpandMacro:
+  jr   __ExpandMacro
+WordID_1018_Exit:
 
 WordID_1008_Entry: ; *** abs ***
   pop  ix
@@ -217,21 +222,21 @@ WordID_1011_Entry: ; *** and ***
   jp   (hl)
 WordID_1011_Exit:
 
-WordID_1038_Entry: ; *** c! ***
+WordID_1039_Entry: ; *** c! ***
   pop  ix
   pop  hl
   ld   a,l
   ld   (de),a
   pop  de
   jp   (ix)
-WordID_1038_Exit:
+WordID_1039_Exit:
 
-WordID_1031_Entry: ; *** c@ ***
+WordID_1032_Entry: ; *** c@ ***
   ex   de,hl
   ld   e,(hl)
   ld   d,0
   ret
-WordID_1031_Exit:
+WordID_1032_Exit:
 
 WordID_1012_Entry: ; *** debug ***
   db   $DD,$01
@@ -258,7 +263,7 @@ WordID_1016_Entry: ; *** dup ***
   jp   (hl)
 WordID_1016_Exit:
 
-WordID_1018_Entry: ; *** fill ***
+WordID_1019_Entry: ; *** fill ***
   pop  ix
   pop  bc    ; # to copy
   pop  hl    ; target address
@@ -271,15 +276,15 @@ __Fill0:ld   a,b   ; check copy # zero
   jr   __Fill0
 __Fill1:pop  de
   jp   (ix)
-WordID_1018_Exit:
+WordID_1019_Exit:
 
-WordID_1020_Entry: ; *** halt ***
+WordID_1021_Entry: ; *** halt ***
 __Halt00:
   halt
   jr   __Halt00
-WordID_1020_Exit:
+WordID_1021_Exit:
 
-WordID_1022_Entry: ; *** move ***
+WordID_1023_Entry: ; *** move ***
   pop  ix
   pop  bc    ; target
   pop  hl    ; source
@@ -295,9 +300,9 @@ __Move0:ld   a,d   ; check count zero
 __Move1:
   pop  de
   jp   (ix)
-WordID_1022_Exit:
+WordID_1023_Exit:
 
-WordID_1024_Entry: ; *** negate ***
+WordID_1025_Entry: ; *** negate ***
   pop  ix
   xor  a
   ld   l,a
@@ -305,15 +310,15 @@ WordID_1024_Entry: ; *** negate ***
   sbc  hl,de
   ex   de,hl
   jp   (ix)
-WordID_1024_Exit:
+WordID_1025_Exit:
 
-WordID_1025_Entry: ; *** nip ***
+WordID_1026_Entry: ; *** nip ***
   pop  hl
   pop  bc
   jp   (hl)
-WordID_1025_Exit:
+WordID_1026_Exit:
 
-WordID_1026_Entry: ; *** not ***
+WordID_1027_Entry: ; *** not ***
   pop  hl
   ld   a,d
   or   e
@@ -322,9 +327,9 @@ WordID_1026_Entry: ; *** not ***
   dec  de
 __Not:
   jp   (hl)
-WordID_1026_Exit:
+WordID_1027_Exit:
 
-WordID_1027_Entry: ; *** or ***
+WordID_1028_Entry: ; *** or ***
   pop  hl
   pop  bc
   ld   a,d
@@ -334,18 +339,18 @@ WordID_1027_Entry: ; *** or ***
   or   c
   ld   e,a
   jp   (hl)
-WordID_1027_Exit:
+WordID_1028_Exit:
 
-WordID_1028_Entry: ; *** over ***
+WordID_1029_Entry: ; *** over ***
   pop  ix
   pop  hl      ; 2nd on stack
   push  hl      ; push back
   push  de      ; push TOS
   ex   de,hl     ; 2nd to TOS
   jp   (ix)
-WordID_1028_Exit:
+WordID_1029_Exit:
 
-WordID_1032_Entry: ; *** rot ***
+WordID_1033_Entry: ; *** rot ***
   pop  ix
   pop  bc    ; 2nd
   pop  hl    ; 3rd
@@ -353,17 +358,17 @@ WordID_1032_Entry: ; *** rot ***
   push  hl    ; push old TOS
   push  bc    ; push value that was 2nd
   jp   (ix)
-WordID_1032_Exit:
+WordID_1033_Exit:
 
-WordID_1034_Entry: ; *** swap ***
+WordID_1035_Entry: ; *** swap ***
   pop  ix
   pop  hl
   push  de
   ex   de,hl
   jp   (ix)
-WordID_1034_Exit:
+WordID_1035_Exit:
 
-WordID_1036_Entry: ; *** u< ***
+WordID_1037_Entry: ; *** u< ***
   pop  ix
   pop  hl
   xor  a
@@ -373,9 +378,9 @@ WordID_1036_Entry: ; *** u< ***
   dec  de
 __ULess:
   jp   (ix)
-WordID_1036_Exit:
+WordID_1037_Exit:
 
-WordID_1039_Entry: ; *** xor ***
+WordID_1040_Entry: ; *** xor ***
   pop  hl
   pop  bc
   ld   a,d
@@ -385,5 +390,5 @@ WordID_1039_Entry: ; *** xor ***
   xor  c
   ld   e,a
   jp   (hl)
-WordID_1039_Exit:
+WordID_1040_Exit:
 

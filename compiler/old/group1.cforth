@@ -1,0 +1,81 @@
+{ ************************************************************************* }
+{ ***																	*** }
+{ ***								Group 1 Words						*** }
+{ ***																	*** }
+{ ************************************************************************* }
+
+{ It is recommended that these words be implemented in the target system. }
+{ The words work, but some are horribly inefficient. }
+	
+{ *** Basic stack operators. Same functionality as normal FORTH *** }
+
+:dup		[temp] ! [temp] @ [temp] @ ;
+:drop 		[temp] ! ;
+:swap 		[temp] ! push [temp] @ pop ;
+:over 		push dup pop swap ;
+:nip 		swap drop ;
+:?dup 		if dup then ; 
+:rot 		push push [temp] ! pop pop [temp] @ ;  
+
+{ *** Basic binary bitwise arithmetic operators  *** }
+
+{ Note, +or is logical or, or is exclusive or, - is 1's complement }
+
+:-			dup nand ;
+:and 		nand - ;
+:+or 		- swap - nand ;
+:or 		over over - and push swap - and pop +or ;
+
+{ *** Add to memory *** }
+
+:+! 		dup [temp] ! @ + [temp] @ ! ;
+
+{ *** Simple unary arithmetic *** }
+
+:1+ 		1 + ;
+:1- 		-1 + ;
+:2+ 		2 + ;
+:2- 		$FFFE + ;
+:2* 		dup + ;
+:negate		- 1+ ;
+
+{ *** Subtraction *** }
+
+:-- 		negate + ;
+
+{ *** Basic comparison operators *** }
+
+:0=		 	if drop 0 ; drop -1 ; 
+:0< 		-if drop -1 ; drop 0 ;
+
+{ *** Next helper *** }
+
+:[bnext]	
+	pop	pop 							{ pop return address and counter }
+	1- 									{ dec counter }
+	if push								{ >0 push counter back on stack }
+	   dup c@ $FF00 + + 1+ push ; 		{ >0 calculate return, push and exit }
+	drop 1+ push ; 						{ drop count, skip offset, push return }
+;
+
+{ *** Get loop index *** }
+
+:i 			pop pop swap over 			{ 2nd value on return stack }
+			push push 1- ;
+
+{ *** Multiply helper *** }			
+
+{ Note: if you are implementing multiply in code, then you don't need this }
+
+:multResult variable private 
+
+:*+ 		over 1 and 						{ get lowest bit of 2nd value }
+			if over multResult +! then 		{ if non zero add 1st value to count }			
+			drop 2* swap 2/ swap ;			{ shift values }
+
+
+{******* CHANGELOG *******}
+
+{ 12-01-18	: 	First complete and tested version }
+
+

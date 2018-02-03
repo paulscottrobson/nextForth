@@ -1,0 +1,40 @@
+{ ************************************************************************* }
+{ ***																	*** }
+{ ***								Group 2 Words						*** }
+{ ***																	*** }
+{ ************************************************************************* }
+
+{ *** Arithmetic Operators *** }
+
+:abs 		-if negate then ;
+:min 		over over -- -if drop drop ; drop nip ;
+:max 		over over -- -if drop nip ; drop drop ;
+
+{ *** Comparison operators *** }
+
+:0> 		negate 0< ;
+:0>= 		0< 0= ;
+:0<= 		0> 0= ;
+
+{ *** Scalars (Arithmetic) ** }
+
+:16* 		2*
+:8* 		2*
+:4* 		2* 2* ;
+:256*  		16* 16* ;
+
+:16/ 		2/ 2/ 2/ 2/ ;
+:256/ 		16/ 16/ ;
+
+{ *** Return stack manipulation *** }
+
+:rdrop		pop pop drop push ;
+
+{ *** Byte Swap *** }
+
+:bswap 	dup 256/ 255 and swap 256* + ;
+
+{******* CHANGELOG *******}
+
+{ 	12-01-18	: 	First complete and tested version }
+

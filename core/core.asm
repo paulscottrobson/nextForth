@@ -27,9 +27,9 @@ initialise:
 		ld 		sp,$FFFF 								; initialise our stack just so this will work.
 		call 	ResetStack 								; then properly initialise them :)
 		call 	IO_ClearScreen 							; clear the screen/border
+		ld 		de,$0000								; top of stack value.
 		ld  	hl,(VectorMainAddress)					; and run the __main word.
 		jp 		(hl)
-
 
 ; **********************************************************************************************************
 ;											Stack reset code

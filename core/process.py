@@ -22,15 +22,23 @@ for l in [x.strip().replace("\t"," ") for x in open("core.asm.dat.vice").readlin
 	if m.group(2)[0] != "_":
 		labelsToAddress[m.group(2).upper()] = int(m.group(1),16)
 #
+#	Load in binary file.
+#
+memory = [ None ] * 0x10000
+binary = open("core.bin","rb").read(32767)
+start = labelsToAddress["START"]
+for n in range(0,len(binary)):
+	memory[start+n] = binary[n]
+#
 #	Mapping of labels to Python functions returning that value.
 #
 labelsToFunctions = {}
-labelsToFunctions["START"] = "getSystemBaseAddress"
-labelsToFunctions["VECTORMAINADDRESS"] = "getMainRoutineVector"
-labelsToFunctions["NEXTFREEDICTIONARY"] = "getDictionaryNextFreePointer"
-labelsToFunctions["NEXTFREECODE"] = "getCodeNextFreePointer"
-labelsToFunctions["WORKSPACE"] = "getWorkspaceAddress"
-labelsToFunctions["DICTIONARYTABLE"] = "getDictionaryTableBase"
+labelsToFunctions["START"] = "SystemBaseAddress"
+labelsToFunctions["VECTORMAINADDRESS"] = "MainRoutineVector"
+labelsToFunctions["NEXTFREEDICTIONARY"] = "DictionaryNextFreePointer"
+labelsToFunctions["NEXTFREECODE"] = "CodeNextFreePointer"
+labelsToFunctions["WORKSPACE"] = "WorkspaceAddress"
+labelsToFunctions["DICTIONARYTABLE"] = "DictionaryTableBase"
 
 for k in labelsToFunctions.keys():
 	assert k in labelsToAddress,"Missing address for '"+k+"'"
@@ -59,7 +67,28 @@ for n in range(0,len(wordData)):
 	wExit = labelsToAddress["WORDID_{0:4}_EXIT".format(wordInfo[1])]
 	
 	h.write('\t\tdict.addCallWord("{0}",0x{1:04x})\n'.format(word,wStart))
+#
+for n in range(0,len(wordData)):
+	wordInfo = wordData[n]
 	if wordInfo[2] == 'Y':
+		word = wordInfo[0]
+		wStart = labelsToAddress["WORDID_{0:4}_ENTRY".format(wordInfo[1])]
+		wExit = labelsToAddress["WORDID_{0:4}_EXIT".format(wordInfo[1])]
+		processed = False
+		if memory[wStart] == 0xDD and memory[wStart+1] == 0xE1:			# POP IX
+			if memory[wExit-2] == 0xDD and memory[wExit-1] == 0xE9:		# JP (IX)
+				processed = True 
+				wStart += 2
+				wExit -= 2
+		if not processed and memory[wStart] == 0xE1:					# POP HL
+			if memory[wExit-1] == 0xE9:									# JP (HL)
+				processed = True 
+				wStart += 1
+				wExit -= 1
+		if not processed and memory[wExit-1] == 0xC9:					# RET (end)
+			processed = True
+			wExit -= 1
 		h.write('\t\tdict.addMacroWord("{0}",0x{1:04x},0x{2:04x})\n'.format(word,wStart,wExit))
+
 
 h.close()

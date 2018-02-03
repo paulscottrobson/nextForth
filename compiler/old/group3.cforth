@@ -1,0 +1,73 @@
+{ ************************************************************************* }
+{ ***																	*** }
+{ ***								Group 3 Words						*** }
+{ ***																	*** }
+{ ************************************************************************* }
+
+{ *** Multiplication (16 bit unsigned) *** }
+
+:* 		0 multResult ! 
+		*+ *+ *+ *+ *+ *+ *+ *+ 			{ do the shift/multiply stuff }
+		*+ *+ *+ *+ *+ *+ *+ *+ 
+		drop drop multResult @ ;
+
+{ *** Memory subtract Operators *** }
+
+:-! 	swap negate swap +! ;
+
+
+{ *** Comparison routines. All leave # on stack if true *** }
+
+:<		-- 0< ;
+:<=		-- 0<= ;
+:>		-- 0> ;
+:>=		-- 0>= ;
+:=		-- 0= ;
+:<> 	-- 0= 0= ;
+
+{ *** unsigned division *** }
+
+{ this is okay for casual division but not for high speed division, especially }
+{ if the Group 1/2 operators are not optimised. Currently division by zero }
+{ returns $FFFF as the quotient }
+
+:__quotient variable private					{ quotient value }
+:__remainder variable private					{ remainder value }
+
+:/												{ Numerator 2nd,Denominator top }
+	0 __quotient !
+	0 __remainder !
+	16 for
+		__remainder @ 2* __remainder !			{ shift remainder left}
+
+		over -if 1 __remainder +! then drop		{ if numerator -ve bump remainder }
+
+		swap 2* swap 							{ shift numerator left }
+
+		__quotient @ 2* __quotient ! 			{ shift quotient left }
+
+		__remainder @ over >= if				{ if remainder >= denominator }
+			over __remainder -! 				{ subtract denominator from remainder }
+			1 __quotient +! 					{ bump the quotient }
+		then drop
+	next
+	drop drop __quotient @						
+;
+
+:mod / drop __remainder @ ;
+
+{ *** Fill memory *** }
+
+:fill 		 for over over c! 1+ next drop drop ; 	{ character address count }
+
+{ *** Move memory, simple copy *** }
+
+:move 	for 										{ source destination count }
+			over over swap c@ swap c! 
+			1+ swap 1+ swap 
+		next drop drop ;
+
+{******* CHANGELOG *******}
+
+{ 	13-01-18	: 	First complete and tested version }
+

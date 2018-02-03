@@ -1,0 +1,48 @@
+(********************************************************************************************)
+(																							 )
+(		Name:		consoleio.cforth 														 )
+(		Purpose:	Console I/O Functions. 													 )
+(		Author:		Paul Robson [paul@robsons.org.uk] 										 )
+(		Date:		22nd January 2001 														 )
+(																							 )
+(********************************************************************************************)
+
+:screenWidth 		32 ; 										( Screen size )
+:screenHeight 		24 ; 	
+:writeHeight 		20 ;  										( Number of lines that are standard output )
+															    ( editing area below this )
+
+:cursorPosition 	variable private 							( Cursor position )
+:colour  			variable private							( Current colour )
+
+:setCursorPosition dup cursorPosition ! cursor! ; private		( Set cursor position in var and physically)
+
+:top 0 setCursorPosition ;										( Move to top of screen )
+
+:checkEOS 	cursorPosition @ screenWidth writeHeight * >=  		( Check if screen clr/top required)
+			if screen top then drop ; private
+
+:emit 		$3F	and colour @ + 									( Print 2+6 bit character)
+			cursorPosition @ swap over screen! 
+			1+ setCursorPosition checkEOS ;
+;
+
+:space	32 emit ; 												( Space)
+
+:cr 	screenWidth 1- and - 									( Carriage return)
+		cursorPosition @ and screenWidth + setCursorPosition checkEOS ;
+
+:white 	$00 colour ! ;											( Set coluurs)
+:red   	$40 colour ! ;
+:green 	$80 colour ! ;
+:yellow	$C0 colour ! ;
+
+:h._2 	15 and dup 10 >= 7 and + 48 + emit ; private			( Hex print )
+:h._1 	dup 16 / h._2 h._2 ; private
+:h. 	space dup 256 / h._1 h._1 ;
+
+:_main $ABCD 
+
+$6000 0 768 screen.copy
+
+$FEDC  halt

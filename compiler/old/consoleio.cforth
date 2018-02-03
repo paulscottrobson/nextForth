@@ -1,0 +1,71 @@
+{ ************************************************************************* }
+{ ***																	*** }
+{ ***						Console I/O Routines						*** }
+{ ***																	*** }
+{ ************************************************************************* }
+
+{ This has a Speccy style arrangement - you can edit in the bottom 4 lines }
+{ and the lines above that display results. }
+
+:scWidth		32 ; 										{ get screen width and height }
+:scHeight 		24 ; 
+:editLines 		4 ; 										{ space for editing at the screen base }
+:yToPos 		16* 2* ; 									{ convert (0,y) to cursor position }
+
+:cursorPos		variable 									{ Cursor position }
+:colour 		variable ; 									{ current colour }
+:color 			color ;										{ spelling for Americans }
+
+{ *** Position cursor *** }
+
+:moveCursor		dup cursor! cursorPos ! ;
+
+{ *** Home Cursor *** }
+
+:top 			0 moveCursor ;
+
+{ *** Clear Screen *** }
+
+:screen 		scWidth yToPos 1- begin $20 over screen! 1- -until drop ;
+
+{ *** Send out one (colour) character *** }
+
+:emit 			63 and colour @ + cursorPos @ screen! 
+				cursorPos @ 1+ moveCursor
+				scHeight editLines -- yToPos cursorPos @ = 
+				if screen top then drop ;	
+
+{ *** Print a space *** }
+
+:space 			32 emit ;
+
+{ *** New line *** }
+
+:cr   			scWidth 1- cursorPos @ and scWidth swap -- for space next ;
+
+{ *** Colours *** }
+
+:white 			$00 colour ! ;
+:red 			$40 colour ! ;
+:green 			$80 colour ! ;
+:yellow 		$C0 colour ! ;
+
+{ *** Hex printing routine *** }
+
+:__h.1			15 and dup 10 >= 7 and + 48 + emit ; private 
+:__h.2			dup 16/ __h.1 __h.1 ; private
+:h. 			space dup 256/ __h.2 __h.2 ;
+
+{ *** Input a key *** }
+
+{ Key values are : ASCII 32-95 13 Return 8 B/S 9 TAB }
+{ 16-19 Colour YGRW (F2-F5) 20-23 UDLR Cursor keys   }
+{ decoding is done in the keyboard@ primitive }
+
+		
+:__main $FEDC
+
+screen
+30000 for next 42 emit
+$ABCD [halt]
+		

@@ -1,0 +1,98 @@
+(********************************************************************************************)
+(																							 )
+(		Name:		support.cforth 															 )
+(		Purpose:	General support functions. 												 )
+(		Author:		Paul Robson [paul@robsons.org.uk] 										 )
+(		Date:		19th January 2001 														 )
+(																							 )
+(********************************************************************************************)
+
+(********************************************************************************************)
+(*									Binary Operators										*)
+(********************************************************************************************)
+
+:abs 	-if negate then ;							( Absolute value n - n )
+:max 	over over -- -if drop nip ; drop drop ;		( Maximum of 2 values n m - n )
+:min 	over over -- -if drop drop ; drop nip ;		( Minimum of 2 values n m - n )
+
+(********************************************************************************************)
+(*									  Unary Scalars 										*)
+(********************************************************************************************)
+
+:4*		2* 2* ;
+:8* 	2* 2* 2* ;
+:16* 	2* 2* 2* 2* ;
+:256* 	2* 2* 2* 2* 2* 2* 2* 2* ;
+
+:4/ 	2/ 2/ ;
+:16/ 	2/ 2/ 2/ 2/ ;
+:256/ 	2/ 2/ 2/ 2/ 2/ 2/ 2/ 2/ ;
+
+(********************************************************************************************)
+(*								Unary Comparison Operators 									*)
+(********************************************************************************************)
+
+:0> 	negate 0< ;
+:0>= 	0< 0= ;
+:0<= 	0> 0= ;
+
+(********************************************************************************************)
+(*								Binary Comparison Operators 								*)
+(********************************************************************************************)
+
+:<		-- 0< ;
+:<=		-- 0<= ;
+:>		-- 0> ;
+:>=		-- 0>= ;
+:=		-- 0= ;
+:<> 	-- 0= 0= ;
+
+(********************************************************************************************)
+(*								Fill Memory with a constant									*)
+(********************************************************************************************)
+
+:fill 				( character address count - )
+	for
+		over over c! 1+
+	next
+	drop drop ;
+
+(********************************************************************************************)
+(* 							Copy memory from one block to another							*)
+(********************************************************************************************)
+
+:move 				( from to count - )
+	for 
+		over c@ over c!
+		1+ swap 1+ swap
+	next 
+	drop drop ;
+
+(********************************************************************************************)
+(*								Unsigned integer division									*)
+(********************************************************************************************)
+
+:__quotient variable private 					( quotient value )
+:__remainder variable private					( remainder value )
+
+:/												( Numerator 2nd,Denominator top )
+	0 __quotient !
+	0 __remainder !
+	16 for
+		__remainder @ 2* __remainder !			( shift remainder left)
+
+		over -if 1 __remainder +! then drop		( if numerator -ve bump remainder )
+
+		swap 2* swap 							( shift numerator left )
+
+		__quotient @ 2* __quotient ! 			( shift quotient left )
+
+		__remainder @ over >= if				( if remainder >= denominator )
+			over negate __remainder +! 			( subtract denominator from remainder )
+			1 __quotient +! 					( bump the quotient )
+		then drop
+	next
+	drop drop __quotient @						
+;
+
+:mod / drop __remainder @ ;						( Calculate remainder )

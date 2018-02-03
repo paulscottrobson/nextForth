@@ -355,8 +355,8 @@ WordID_1033_Entry: ; *** rot ***
   pop  bc    ; 2nd
   pop  hl    ; 3rd
   ex   de,hl   ; 3rd to TOS, TOS->HL
-  push  hl    ; push old TOS
   push  bc    ; push value that was 2nd
+  push  hl    ; push old TOS
   jp   (ix)
 WordID_1033_Exit:
 

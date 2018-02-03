@@ -71,7 +71,8 @@ class Dictionary(object):
 	#
 	def add(self,dictionaryItem):
 		self.entries.append(dictionaryItem)
-		self.nameToEntry[dictionaryItem.getName()] = dictionaryItem
+		if dictionaryItem.getDictionaryID() == DictionaryItem.FORTH:
+			self.nameToEntry[dictionaryItem.getName()] = dictionaryItem
 	#
 	def addCallWord(self,name,address):
 		self.add(DictionaryItem(name,address,DictionaryItem.FORTH))

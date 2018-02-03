@@ -178,22 +178,15 @@ class Compiler(object):
 
 if __name__ == '__main__':
 	cc = Compiler()
-	src = """
-
-	:star 42 ;
-
-	:__main $FEDC star star $ABCD dump.stack halt ;
-
-	""".split("\n")
-	cc.compileText(src)
+	cc.compileFile("testing.forth")
 	#cc.dictionary.list()
 	cc.complete()	
 
 # TODO:
 # 	testing
 #	structores/conditionals.
+# 	rendering directories
 # 	i/o words
 #	add min max / mod times within (?)
 # 	macro expansion / speed control
-
 

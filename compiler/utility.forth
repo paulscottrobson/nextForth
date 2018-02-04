@@ -1,0 +1,13 @@
+( *** Utility Routines *** )
+
+:max 2dup - 0<  if nip else drop then ;
+:min 2dup - 0<  if drop else nip then ;
+
+:4* 2* 2* ;
+:8* 2* 2* 2* ;
+:16* 2* 2* 2* 2* ;
+:4/ 2/ 2/ ;
+:16/ 2/ 2/ 2/ 2/ ;
+
+:__main $FEDC
+$ABCD dump.stack halt ;

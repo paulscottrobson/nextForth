@@ -38,4 +38,4 @@
 (( $8000 $5C80 32 move ) 							( move visual check $5C80-$5CA0 )
 ;
 
-:__main $FEDC tests1 tests2 $ABCD dump.stack halt ;
+:__main $FEDC 6 colour! 42 30 screen! 65 730 screen! keyboard@ $ABCD dump.stack halt ;

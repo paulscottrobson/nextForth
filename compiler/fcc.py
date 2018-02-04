@@ -102,6 +102,10 @@ class Compiler(object):
 		if re.match("^\$[0-9a-f]+$",word) is not None:
 			self.compileLiteral(int(word[1:],16))
 			return
+		# Structures
+		if word == "if" or word == "else" or word == "then":
+			self.compileConditional(word)
+			return
 
 		raise CompilerException("Cannot process '{0}'".format(word))
 	#
@@ -161,10 +165,33 @@ class Compiler(object):
 	def executeMacro(self,word):
 		pass
 	#
-	#	Compile if/-if/then code
+	#	Compile if/else/then code
 	#
 	def compileConditional(self,word):
-		pass
+		if word == "if":
+			if self.ifLink is not None:
+				raise CompilerException("Cannot nest if")
+			self.memory.compileByte(0x7A)					# LD A,D
+			self.memory.compileByte(0xB3)					# OR E
+			self.memory.compileByte(0xD1) 					# POP DE
+			self.memory.compileByte(0x28) 					# JR Z,
+			self.ifLink = self.memory.getPointer()
+			self.memory.compileByte(0x00)					# jump offset
+		if word == "else":
+			if self.ifLink is None:
+				raise CompilerException("else without if")
+			# Patch JR in IF
+			self.memory.writeByte(self.ifLink,self.memory.getPointer()+1-self.ifLink,True)
+			self.memory.compileByte(0x18) 					# JR
+			self.ifLink = self.memory.getPointer()
+			self.memory.compileByte(0x00)					# jump offset
+		if word == "then":
+			if self.ifLink is None:
+				raise CompilerException("else without if")
+			# Patch JR in IF or ELSE
+			self.memory.writeByte(self.ifLink,self.memory.getPointer()-1-self.ifLink,True)
+			self.ifLink = None
+
 	#
 	#	Compile begin/until/-until
 	#
@@ -178,14 +205,13 @@ class Compiler(object):
 
 if __name__ == '__main__':
 	cc = Compiler()
-	cc.compileFile("testing.forth")
+	cc.compileFile("utility.forth")
 	#cc.dictionary.list()
 	cc.complete()	
 
 # TODO:
 #	structores/conditionals.
 # 	rendering directories
-# 	i/o words
 #	add min max / mod times within (?)
 # 	console i/o and new testing routine.
 # 	macro expansion / speed control

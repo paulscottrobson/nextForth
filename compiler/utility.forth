@@ -10,4 +10,5 @@
 :16/ 2/ 2/ 2/ 2/ ;
 
 :__main $FEDC
+768 for i c@ 7 and 64 + colour! i c@ i screen! next
 $ABCD dump.stack halt ;

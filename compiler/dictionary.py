@@ -65,6 +65,7 @@ class Dictionary(object):
 		self.entries = []
 		# functioning entries. We add macros after calls so calls supercede macros here.
 		self.nameToEntry = {}
+		self.nameToMacro = {}
 		self.info = CoreInformation()
 		self.info.createDictionaryItems(self)
 		#print(self.nameToEntry.keys())
@@ -73,6 +74,8 @@ class Dictionary(object):
 		self.entries.append(dictionaryItem)
 		if dictionaryItem.getDictionaryID() == DictionaryItem.FORTH:
 			self.nameToEntry[dictionaryItem.getName()] = dictionaryItem
+		else:
+			self.nameToMacro[dictionaryItem.getName()] = dictionaryItem
 	#
 	def addCallWord(self,name,address):
 		self.add(DictionaryItem(name,address,DictionaryItem.FORTH))

@@ -106,6 +106,12 @@ class Compiler(object):
 		if word == "if" or word == "else" or word == "then":
 			self.compileConditional(word)
 			return
+		if word == "begin" or word == "until":
+			self.compileBeginLoop(word)
+			return
+		if word == "for" or word == "next" or word == "i":
+			self.compileForLoop(word)
+			return
 
 		raise CompilerException("Cannot process '{0}'".format(word))
 	#
@@ -196,12 +202,54 @@ class Compiler(object):
 	#	Compile begin/until/-until
 	#
 	def compileBeginLoop(self,word):
-		pass
+		if word == "begin":
+			if self.beginLink is not None:
+				raise CompilerException("Cannot nest begin")
+			self.beginLink = self.memory.getPointer()
+		if word == "until":
+			if self.beginLink is None:
+				raise CompilerException("until without begin")
+			self.memory.compileByte(0x7A)					# LD A,D
+			self.memory.compileByte(0xB3)					# OR E
+			self.memory.compileByte(0xD1) 					# POP DE
+			self.memory.compileByte(0x28) 					# JR Z,
+			self.memory.compileByte(256+self.beginLink-self.memory.getPointer()-1)
+			self.beginLink = None
 	#
 	#	Compile for/next. Similar trick to that avoiding Return.
 	#
 	def compileForLoop(self,word):
-		pass
+		if word == "for":
+			if self.forLink is not None:
+				raise CompilerException("Cannot nest for")
+			self.memory.compileByte(0xEB) 					# EX DE,HL
+			self.memory.compileByte(0xD1) 					# POP DE
+			self.forLink = self.memory.getPointer()
+			self.memory.compileByte(0x22)					# LD (xxxx),HL
+			self.memory.compileWord(0x0000)
+
+		if word == "next":
+			if self.forLink is None:
+				raise CompilerException("next without for")
+			self.memory.compileByte(0x21) 					# LD HL,xxxx
+			self.memory.compileWord(0x0000)
+			# Fix up store loop value address
+			self.memory.writeWord(self.forLink+1,self.memory.getPointer()-2,True)
+			self.memory.compileByte(0x2B)					# DEC HL
+			self.memory.compileByte(0x7C)					# LD A,H
+			self.memory.compileByte(0xB5)					# OR L
+			self.memory.compileByte(0x20) 					# JR NZ,
+			self.memory.compileByte(256+self.forLink-self.memory.getPointer()-1)
+			self.forLink = None
+
+		if word == "i":
+			if self.forLink is None:
+				raise CompilerException("cannot access i outside for loop")
+			self.memory.compileByte(0x21) 					# LD HL,xxxx
+			self.memory.compileWord(self.forLink+1)
+			self.compileCall("i.fetch")
+
+
 
 if __name__ == '__main__':
 	cc = Compiler()
@@ -210,9 +258,8 @@ if __name__ == '__main__':
 	cc.complete()	
 
 # TODO:
-#	structores/conditionals.
-# 	rendering directories
-#	add min max / mod times within (?)
-# 	console i/o and new testing routine.
 # 	macro expansion / speed control
+# 	rendering directories
+#	add / mod times within (?)
+# 	console i/o and new testing routine.
 # 	self
